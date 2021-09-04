@@ -62,71 +62,60 @@ require("express-async-errors");
   });
 
   // [POST]
-	app.post("/personagens", async (req, res) => {
-		const objeto = req.body;
+  app.post("/characters", async (req, res) => {
+    const object = req.body;
 
-		if (!objeto || !objeto.nome || !objeto.imagemUrl) {
-			res.status(400).send({
-				error:
-					"Personagem inválido, certifique-se que tenha os campos nome e imagemUrl",
-			});
-			return;
-		}
+    if (!object || !object.nome || !object.imagemUrl) {
+      res.status(400).send({ error: "Personagem inválido, certifique-se que tenha os campos nome e imagemUrl" });
+      return;
+    }
 
-		const result = await personagens.insertOne(objeto);
+    const result = await rickandmorty.insertOne(object);
 
-		console.log(result);
-		//Se ocorrer algum erro com o mongoDb esse if vai detectar
-		if (result.acknowledged == false) {
-			res.status(500).send({ error: "Ocorreu um erro" });
-			return;
-		}
+    // se ocorrer algum erro com o MongoDB, esse if detectará e retornará result como falso
+    if (result.acknowledged == false) {
+      res.status(500).send({ error: "Ocorreu um erro" });
+      return;
+    }
 
-		res.status(201).send(objeto);
-	});
+    res.status(201).send({ object });
+  });
 
-	//[PUT] Atualizar personagem
-	app.put("/personagens/:id", async (req, res) => {
-		const id = req.params.id;
-		const objeto = req.body;
+  // [PUT]
+  app.put("/characters/:id", async (req, res) => {
+    const id = req.params.id;
+    const object = req.body;
 
-		if (!objeto || !objeto.nome || !objeto.imagemUrl) {
-			res.status(400);
-			send({
-				error:
-					"Requisição inválida, certifique-se que tenha os campos nome e imagemUrl",
-			});
-			return;
-		}
+    if (!object || !object.nome || !object.imagemUrl) {
+      res.status(400).send({ error: "Personagem inválido, certifique-se que tenha os campos nome e imagemUrl" });
+      return;
+    }
 
-		const quantidadePersonagens = await personagens.countDocuments({
-			_id: ObjectId(id),
-		});
+    const quantityOfCharacters = await rickandmorty.countDocuments({
+      _id: ObjectId(id),
+    });
 
-		if (quantidadePersonagens !== 1) {
-			res.status(404).send({ error: "Personagem não encontrado" });
-			return;
-		}
+    if (quantityOfCharacters !== 1) {
+      res.status(404).send("Personagem não encontrado!");
+      return;
+    }
 
-		const result = await personagens.updateOne(
-			{
-				_id: ObjectId(id),
-			},
-			{
-				$set: objeto,
-			}
-		);
-		//console.log(result);
-		//Se acontecer algum erro no MongoDb, cai na seguinte valiadação
-		if (result.acknowledged == "undefined") {
-			res
-				.status(500)
-				.send({ error: "Ocorreu um erro ao atualizar o personagem" });
-			return;
-		}
-		res.send(await getPersonagemById(id));
-	});
-  
+    const result = await rickandmorty.updateOne(
+      {
+        _id: ObjectId(id),
+      },
+      {
+        $set: object,
+      }
+    );
+
+    if (result.acknowledged == "undefined") {
+      res.status(500).send({ error: "Ocorreu um erro ao atualizar o personagem" });
+    }
+
+    res.send(await getCharacterById(id));
+  });
+
   // [DELETE]
   app.delete("/characters/:id", async (req, res) => {
     const id = req.params.id;
