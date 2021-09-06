@@ -4,6 +4,9 @@ const ObjectId = mongodb.ObjectId;
 require("dotenv").config();
 require("express-async-errors");
 
+// Requisições de endpoints
+const home = require("./components/home/home");
+
 // POR PADRÃO, O EXPRESS NÃO CONSEGUE SAIR DE FUNÇÕES ASSÍNCRONAS
 (async () => {
   const dbUser = process.env.DB_USER;
@@ -38,10 +41,8 @@ require("express-async-errors");
     next();
   });
 
-  app.get("/", async (req, res) => {
-		const teste = undefined;
-		res.send({ info: "Olá, Blue" + teste.sdas});
-	});
+  // Criando a rota /home
+  app.use("/home", home);
 
   // [GET] - todos os personagens
   app.get("/characters", async (req, res) => {
@@ -142,7 +143,6 @@ require("express-async-errors");
   });
 
   
-  
   // Tratamento de erros com middlewares:
   app.all("*", (req, res) => {
     res.status(404).send({ message: "Endpoint has not been found" });
@@ -159,6 +159,6 @@ require("express-async-errors");
   });
 
   app.listen(port, () => {
-    console.info(`App rodando em http://localhost:${port}`);
+    console.info(`App rodando em http://localhost:${port}/home`);
   });
 })();
