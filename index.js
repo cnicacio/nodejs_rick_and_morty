@@ -12,49 +12,51 @@ const create = require("./components/create/create");
 const update = require("./components/update/update");
 const del = require("./components/delete/delete");
 
-const app = express();
-app.use(express.json());
-const port = process.env.PORT || 3000;
+(async () => {
+  const app = express();
+  app.use(express.json());
+  const port = process.env.PORT || 3000;
 
-// CORS
+  // CORS
 
-var cors = require("cors");
-app.use(cors());
-app.options("*", cors());
+  var cors = require("cors");
+  app.use(cors());
+  app.options("*", cors());
 
-// Criando a rota /home
-app.use("/home", home);
+  // Criando a rota /home
+  app.use("/home", home);
 
-// [GET] - todos os personagens
-app.use("/characters/read-all", readAll);
+  // [GET] - todos os personagens
+  app.use("/characters/read-all", readAll);
 
-// [GET] - personagem pelo id
-app.use("/characters/read-by-id", readById);
+  // [GET] - personagem pelo id
+  app.use("/characters/read-by-id", readById);
 
-// [POST]
-app.use("/characters/create", create);
+  // [POST]
+  app.use("/characters/create", create);
 
-// [PUT]
-app.use("/characters/update", update);
+  // [PUT]
+  app.use("/characters/update", update);
 
-// [DELETE]
-app.use("/characters/delete", del);
+  // [DELETE]
+  app.use("/characters/delete", del);
 
-// Tratamento de erros com middlewares:
-app.all("*", (req, res) => {
-  res.status(404).send({ message: "Endpoint has not been found" });
-});
-
-// biblioteca express async errors
-app.use((error, req, res, next) => {
-  res.status(error.status || 500).send({
-    error: {
-      status: error.status || 500,
-      message: error.message || "Internal server error",
-    },
+  // Tratamento de erros com middlewares:
+  app.all("*", (req, res) => {
+    res.status(404).send({ message: "Endpoint has not been found" });
   });
-});
 
-app.listen(port, () => {
-  console.info(`App rodando em http://localhost:${port}/home`);
-});
+  // biblioteca express async errors
+  app.use((error, req, res, next) => {
+    res.status(error.status || 500).send({
+      error: {
+        status: error.status || 500,
+        message: error.message || "Internal server error",
+      },
+    });
+  });
+
+  app.listen(port, () => {
+    console.info(`App rodando em http://localhost:${port}/home`);
+  });
+})();
