@@ -40,7 +40,7 @@ const ObjectId = mongodb.ObjectId;
     });
 
     if (quantityOfCharacters !== 1) {
-      res.status(404).send("Personagem não encontrado!");
+      res.status(404).send( { error: "Personagem não encontrado! " });
       return;
     }
 
